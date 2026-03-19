@@ -11,11 +11,9 @@ export default function HomePage() {
   };
 
   return (
-    <section className="min-h-[calc(100vh-64px)] bg-slate-950">
-      <div className="mx-auto flex w-full max-w-6xl flex-col px-6 py-12">
-        {/* 1. Hero */}
+    <section className="min-h-[calc(100vh-64px)] flex items-center bg-slate-950">
+      <div className="mx-auto w-full max-w-6xl px-6 py-12">
         <div className="flex flex-col justify-between gap-12 lg:flex-row lg:items-center">
-          {/* Left */}
           <div className="max-w-2xl">
             <h1 className="text-3xl font-bold leading-snug text-white md:text-4xl">
               프론트엔드 기술 면접 연습을 위한 학습 도구 DevPrep
@@ -27,18 +25,15 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Right */}
           <div className="flex justify-center lg:justify-end">
             <InterviewPreview />
           </div>
         </div>
 
-        {/* 2. Feature Cards */}
         <div className="mt-16">
           <FeatureCards />
         </div>
 
-        {/* 3. CTA */}
         <div className="mt-16 flex flex-col items-center gap-4">
           <p className="text-base text-slate-400">
             지금 바로 DevPrep으로 면접 연습을 시작해보세요
