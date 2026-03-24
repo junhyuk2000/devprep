@@ -6,7 +6,7 @@ export default function AppLayout() {
     <div className="min-h-screen bg-gray-950 text-white">
       <Header />
 
-      <main>
+      <main className="h-[calc(100vh-64px)]">
         <Outlet />
       </main>
     </div>
