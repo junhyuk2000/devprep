@@ -192,7 +192,7 @@ export default function SetupPage() {
               </strong>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-slate-800/80 p-5">
+            <div className="rounded-2xl border border-white/10 bg-slate-800/80 p-5 min-h-[100px]">
               <p className="mb-2 text-sm text-slate-400">기술 분야</p>
               <div className="flex flex-wrap gap-2">
                   {selectedTech.map((tech)=>(
@@ -208,8 +208,8 @@ export default function SetupPage() {
           </div>
 
           <div className="mt-8 rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-5">
-            <p className="text-sm leading-6 text-slate-300">
-              설정이 완료되면 맞춤형 질문 세트로 바로 면접 연습을 시작할 수 있습니다.
+            <p className="text-sm text-slate-300 leading-relaxed break-keep">
+              설정 완료 후 바로 면접 연습이 시작됩니다.
             </p>
           </div>
 
