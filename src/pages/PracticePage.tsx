@@ -1,21 +1,41 @@
 import { useInterviewStore } from "../store/useInterviewStore";
 import { usePracticeStore } from "../store/usePracticeStore";
 import { questions } from "../data/questions";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function PracticePage() {
-
   
+  const navigate = useNavigate();
+
+  function shuffleArray<T>(array: T[]): T[] {
+    const copied = [...array];
+
+    for (let i = copied.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copied[i], copied[j]] = [copied[j], copied[i]];
+    }
+
+    return copied;
+  }
+
   const selectedTech = useInterviewStore((state) => state.selectedTech);
   const questionCount = useInterviewStore((state) => state.questionCount);
-  
+
   // 조건에 맞는 전체 문제 배열
-  const filteredQuestions = questions.filter((q)=>
-    selectedTech.includes(q.tech)
-  );
+  const filteredQuestions = useMemo(() => {
+    return questions.filter((q) => selectedTech.includes(q.tech));
+  }, [selectedTech]);
+
+  // 문제 배열 생성 시 1회 셔플
+  const shuffledQuestion = useMemo(() => {
+    return shuffleArray(filteredQuestions);
+  }, [filteredQuestions]);
 
   // 조건에 맞는 전체 문제 배열 > slice
-  const practiceQuestions = filteredQuestions.slice(0, questionCount ?? 0);
+  const practiceQuestions = useMemo(() => {
+    return shuffledQuestion.slice(0, questionCount ?? 0);
+  }, [shuffledQuestion, questionCount]);
 
   // 현재 index
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,40 +47,42 @@ export default function PracticePage() {
 
   // 자기 평가
   const [selectedEvaluation, setSelectedEvaluation] = useState<
-  "correct" | "review" | "wrong" | null
+    "correct" | "review" | "wrong" | null
   >(null);
 
-  const addRecord = usePracticeStore((state)=>state.addRecord);
+  const addRecord = usePracticeStore((state) => state.addRecord);
+
+  const [isFinishing, setIsFinishing] = useState(false);
 
   // 다음 문제 버튼 동작
-  const handleNext = () => {    
-    if (!selectedEvaluation) return;
+  const handleNext = () => {
+    if (!currentQuestion || !selectedEvaluation) return;
 
     addRecord({
       questionId: currentQuestion.id,
       evaluation: selectedEvaluation,
     });
+
+    const isLastQuestion = currentIndex === practiceQuestions.length - 1;
+
+    if (isLastQuestion) {
+      setIsFinishing(true);
+
+      setTimeout(() => {
+        navigate("/result");
+      }, 1000);
+
+      return;
+    }
+
     setIsAnswerVisible(false);
     setSelectedEvaluation(null);
-    setCurrentIndex((prev)=> prev + 1);
-  }; 
+    setCurrentIndex((prev) => prev + 1);
+  };
 
-
-
-
-
-
-
-
-
+  if (isFinishing) { return ( <section className="min-h-[calc(100vh-64px)] bg-slate-950 text-white"> <div className="mx-auto flex min-h-[calc(100vh-64px)] max-w-7xl items-center justify-center px-6"> <p className="text-lg font-medium text-slate-300"> 결과 산출중입니다... </p> </div> </section> ); }
 
   return (
-
-    // <div>
-    //   <p>{currentQuestion?.question}</p>
-    //   <button onClick={handleNext}>다음문제</button>
-    // </div>
-
     <section className="min-h-[calc(100vh-64px)] bg-slate-950 text-white">
       <div className="mx-auto flex w-full max-w-7xl flex-col px-6 py-10">
         {/* 상단 타이틀 */}
