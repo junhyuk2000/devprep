@@ -1,12 +1,18 @@
 import { useInterviewStore } from "../store/useInterviewStore";
 import { usePracticeStore } from "../store/usePracticeStore";
 import { questions } from "../data/questions";
-import { useMemo, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function PracticePage() {
   
   const navigate = useNavigate();
+
+  const selectedTech = useInterviewStore((state) => state.selectedTech);
+  const questionCount = useInterviewStore((state) => state.questionCount);
+
+  const practiceQuestionsFromStore = usePracticeStore((state) => state.practiceQuestions);
+  const setPracticeQuestions = usePracticeStore((state) => state.setPracticeQuestions); 
 
   function shuffleArray<T>(array: T[]): T[] {
     const copied = [...array];
@@ -19,31 +25,33 @@ export default function PracticePage() {
     return copied;
   }
 
-  const selectedTech = useInterviewStore((state) => state.selectedTech);
-  const questionCount = useInterviewStore((state) => state.questionCount);
+  useEffect(()=> {
+    if (practiceQuestionsFromStore.length > 0) return;
+    if (questionCount === null) return;
 
-  // 조건에 맞는 전체 문제 배열
-  const filteredQuestions = useMemo(() => {
-    return questions.filter((q) => selectedTech.includes(q.tech));
-  }, [selectedTech]);
+    // 1. selectedTech 기반 선택한 문제 filter
+    const filtered = questions.filter((item)=>
+      selectedTech.includes(item.tech)
+    );
+    // 2. filter로 생성된 배열 셔플
+    const shuffled = shuffleArray(filtered);
+    // 3. questionCount 값 만큼 배열 slice
+    const finalQuestions = shuffled.slice(0, questionCount);
+    // 4. 최종 배열 set
+    setPracticeQuestions(finalQuestions);
+  },[practiceQuestionsFromStore.length, selectedTech, questionCount, setPracticeQuestions]);
 
-  // 문제 배열 생성 시 1회 셔플
-  const shuffledQuestion = useMemo(() => {
-    return shuffleArray(filteredQuestions);
-  }, [filteredQuestions]);
-
-  // 조건에 맞는 전체 문제 배열 > slice
-  const practiceQuestions = useMemo(() => {
-    return shuffledQuestion.slice(0, questionCount ?? 0);
-  }, [shuffledQuestion, questionCount]);
 
   // 현재 index
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const currentIndex = usePracticeStore((state)=> state.currentIndex);
+  // currentIndex + 1
+  const goNext = usePracticeStore((state)=> state.goNext);
+
   // 답안 보기
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
 
   // 전체 배열 > 현재 index 문제
-  const currentQuestion = practiceQuestions[currentIndex];
+  const currentQuestion = practiceQuestionsFromStore[currentIndex];
 
   // 자기 평가
   const [selectedEvaluation, setSelectedEvaluation] = useState<
@@ -63,7 +71,7 @@ export default function PracticePage() {
       evaluation: selectedEvaluation,
     });
 
-    const isLastQuestion = currentIndex === practiceQuestions.length - 1;
+    const isLastQuestion = currentIndex === practiceQuestionsFromStore.length - 1;
 
     if (isLastQuestion) {
       setIsFinishing(true);
@@ -77,7 +85,7 @@ export default function PracticePage() {
 
     setIsAnswerVisible(false);
     setSelectedEvaluation(null);
-    setCurrentIndex((prev) => prev + 1);
+    goNext();
   };
 
   if (isFinishing) { return ( <section className="min-h-[calc(100vh-64px)] bg-slate-950 text-white"> <div className="mx-auto flex min-h-[calc(100vh-64px)] max-w-7xl items-center justify-center px-6"> <p className="text-lg font-medium text-slate-300"> 결과 산출중입니다... </p> </div> </section> ); }
@@ -88,7 +96,7 @@ export default function PracticePage() {
         {/* 상단 타이틀 */}
         <header className="mb-8">
           <h1 className="text-4xl font-bold tracking-tight">Practice</h1>
-          <p className="mt-4 text-sm text-slate-400">Question {currentIndex + 1} of {practiceQuestions.length}</p>
+          <p className="mt-4 text-sm text-slate-400">Question {currentIndex + 1} of {practiceQuestionsFromStore.length}</p>
 
           {/* 진행 바 */}
           {/* <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-white">

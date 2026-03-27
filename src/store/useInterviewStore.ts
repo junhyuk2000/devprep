@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type Job = "frontend" | "backend" | "fullstack" | null ;
+type Job = "frontend" | "backend" | "fullstack" | null;
 type QuestionCount = 5 | 10 | 15 | 20 | 25 | 30 | null;
 type Tech = "typescript" | "react" | "javascript" | "browser" | "network" | "htmlcss";
 
