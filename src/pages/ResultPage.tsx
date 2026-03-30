@@ -1,5 +1,6 @@
 import { useInterviewStore } from "../store/useInterviewStore";
 import { usePracticeStore } from "../store/usePracticeStore"
+import { questions } from "../data/questions";
 import { useNavigate } from "react-router-dom";
 
 export default function ResultPage() {
@@ -19,8 +20,43 @@ export default function ResultPage() {
   const reviewPercent = totalCount === 0 ? 0 : (review.length / totalCount) * 100;
   const wrongPercent = totalCount === 0 ? 0 : (wrong.length / totalCount) * 100;
 
-  const resetPractice = usePracticeStore((state)=> state.resetPractice)
-  const resetRecords = usePracticeStore((state)=> state.resetRecords)
+  const resetPractice = usePracticeStore((state)=> state.resetPractice);
+  const resetRecords = usePracticeStore((state)=> state.resetRecords);
+
+  ///////////////////////////////////////////////////////////////////////////
+
+  const techStats : Record<string, { correct: number, review: number, wrong: number }> = {};
+
+  const practiceQuestions = usePracticeStore((state)=>state.practiceQuestions)
+
+  records.forEach((records) => {
+      const matchedQuestion = practiceQuestions.find((question)=>(
+        question.id === records.questionId
+      ));
+
+      if(!matchedQuestion) return;
+
+      const tech = matchedQuestion.tech;
+
+      if(!techStats[tech]){
+        techStats[tech] = {
+          correct: 0,
+          review: 0,
+          wrong: 0,
+        };
+      }
+
+      techStats[tech][records.evaluation]++;
+  });
+
+  const techStatsArray = Object.entries(techStats);
+
+  const weakTechs = techStatsArray.filter(([tech, stat]) => {
+    return stat.wrong > 0 || (stat.correct === 0 && stat.review > 0);
+  })
+  .map(([tech]) => tech);
+
+
   return (
     <section className="min-h-[calc(100vh-64px)] bg-[#020b26] px-6 py-12 text-white">
       <div className="mx-auto w-full max-w-5xl">
@@ -68,60 +104,49 @@ export default function ResultPage() {
 
           <div className="rounded-[24px] border border-[#1b2a52] bg-[#081633] p-6">
             <h2 className="mb-6 text-2xl font-bold">카테고리 분석</h2>
+              {techStatsArray.map(([tech, stat]) => {
 
-            <div className="space-y-6">
-              <div className="border-b border-[#1b2a52] pb-4">
-                <div className="mb-1 flex justify-between">
-                  <span className="text-lg font-semibold">React</span>
-                  <span className="text-xs text-[#7f92c2]">(2문제)</span>
-                </div>
+                const techStatTotal = stat.correct + stat.review + stat.wrong;
 
-                <div className="mb-1 flex h-2 rounded-full bg-[#111f42]">
-                  <div className="w-[50%] rounded-l-full bg-[#3c6869]" />
-                  <div className="w-[50%] rounded-r-full bg-[#c39134]" />
-                </div>
+                const statCorrectPercent = (stat.correct / techStatTotal) * 100;
+                const statReviewPercent = (stat.review / techStatTotal) * 100;
+                const statWrongPercent = (stat.wrong / techStatTotal) * 100;
 
-                <p className="text-xs text-[#8fa6d8]">
-                  1 정확 / 1 복습 필요 / 0 틀림
-                </p>
-              </div>
+                return (
+                  <div className="space-y-6" key={tech}>
+                    <div className="border-b border-[#1b2a52] pb-4">
+                      <div className="mb-1 flex justify-between">
+                        <span className="text-lg font-semibold">{tech}</span>
+                        <span className="text-xs text-[#7f92c2]">{techStatTotal}문제</span>
+                      </div>
 
-              <div className="border-b border-[#1b2a52] pb-4">
-                <div className="mb-1 flex justify-between">
-                  <span className="text-lg font-semibold">Browser</span>
-                  <span className="text-xs text-[#7f92c2]">(4문제)</span>
-                </div>
+                      <div className="mb-1 flex h-2 rounded-full bg-[#111f42]">
+                        <div 
+                          className="rounded-l-full bg-[#3c6869]" 
+                          style={{width : `${statCorrectPercent}%`}}
+                        />
+                        <div 
+                          className="rounded-r-full bg-[#c39134]" 
+                          style={{ width : `${statReviewPercent}%`}}
+                        />
+                        <div 
+                          className="rounded-r-full bg-[#8f434f]" 
+                          style={{ width : `${statWrongPercent}%`}}
+                        />
+                      </div>
 
-                <div className="mb-1 flex h-2 rounded-full bg-[#111f42]">
-                  <div className="w-[25%] rounded-l-full bg-[#3c6869]" />
-                  <div className="w-[25%] bg-[#c39134]" />
-                  <div className="w-[50%] rounded-r-full bg-[#8f434f]" />
-                </div>
-
-                <p className="text-xs text-[#8fa6d8]">
-                  1 정확 / 1 복습 필요 / 2 틀림
-                </p>
-              </div>
-
-              <div>
-                <div className="mb-1 flex justify-between">
-                  <span className="text-lg font-semibold">Network</span>
-                  <span className="text-xs text-[#7f92c2]">(1문제)</span>
-                </div>
-
-                <div className="mb-1 flex h-2 rounded-full bg-[#111f42]">
-                  <div className="w-[100%] rounded-full bg-[#c39134]" />
-                </div>
-
-                <p className="text-xs text-[#8fa6d8]">
-                  0 정확 / 1 복습 필요 / 0 틀림
-                </p>
-              </div>
-            </div>
+                      <p className="text-xs text-[#8fa6d8]">
+                        {stat.correct} 정확 / {stat.review} 복습 필요 / {stat.wrong} 틀림
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+            
 
             <div className="mt-8 flex justify-between border-t border-[#1b2a52] pt-5">
               <span className="text-lg font-semibold">약점 분석</span>
-              <span className="text-sm text-[#c7d4f7]">Browser, Network</span>
+              <span className="text-sm text-[#c7d4f7]">{weakTechs.length > 0 ? weakTechs.join(", ") : "없음"}</span>
             </div>
           </div>
         </div>
