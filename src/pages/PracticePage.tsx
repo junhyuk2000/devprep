@@ -13,6 +13,7 @@ export default function PracticePage() {
 
   const practiceQuestionsFromStore = usePracticeStore((state) => state.practiceQuestions);
   const setPracticeQuestions = usePracticeStore((state) => state.setPracticeQuestions); 
+  const mode = usePracticeStore((state)=> state.mode);
 
   function shuffleArray<T>(array: T[]): T[] {
     const copied = [...array];
@@ -26,6 +27,7 @@ export default function PracticePage() {
   }
 
   useEffect(()=> {
+    if(mode !== "normal") return;
     if (practiceQuestionsFromStore.length > 0) return;
     if (questionCount === null) return;
 
@@ -39,7 +41,8 @@ export default function PracticePage() {
     const finalQuestions = shuffled.slice(0, questionCount);
     // 4. 최종 배열 set
     setPracticeQuestions(finalQuestions);
-  },[practiceQuestionsFromStore.length, selectedTech, questionCount, setPracticeQuestions]);
+    
+  },[mode, practiceQuestionsFromStore.length, selectedTech, questionCount, setPracticeQuestions]);
 
 
   // 현재 index

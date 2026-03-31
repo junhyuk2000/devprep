@@ -2,6 +2,7 @@ import { create } from "zustand"
 import type { QuestionItem } from "../data/questions"
 
 type Evaluation = "correct" | "review" | "wrong" ;
+type PracticeMode = "normal" | "review" ;
 
 interface PracticeRecord {
     questionId: string;
@@ -9,10 +10,14 @@ interface PracticeRecord {
 }
 
 interface PracticeState {
+    mode: PracticeMode;
+
     records: PracticeRecord[];
     practiceQuestions: QuestionItem[];
     currentIndex: number;
 
+
+    setMode: (mode: PracticeMode) => void;
     goNext: () => void;
     setPracticeQuestions: (questions: QuestionItem[])=> void;
 
@@ -23,10 +28,13 @@ interface PracticeState {
 }
 
 export const usePracticeStore = create<PracticeState>((set)=>({
+    mode: "normal",
+
     records : [],
     practiceQuestions: [],
     currentIndex: 0,
 
+    setMode: (mode) => set({ mode }),
 
     addRecord: (record) =>
         set((state)=>({
@@ -50,5 +58,6 @@ export const usePracticeStore = create<PracticeState>((set)=>({
         set({
             practiceQuestions: [],
             currentIndex: 0,
+            mode: "normal",
         })
 }));

@@ -1,6 +1,6 @@
+import { questions } from "../data/questions";
 import { useInterviewStore } from "../store/useInterviewStore";
 import { usePracticeStore } from "../store/usePracticeStore"
-import { questions } from "../data/questions";
 import { useNavigate } from "react-router-dom";
 
 export default function ResultPage() {
@@ -56,6 +56,20 @@ export default function ResultPage() {
   })
   .map(([tech]) => tech);
 
+  ///////////////////////////////////////////////////////////////////////////
+  const mode = usePracticeStore((state)=> state.mode);
+  const setMode = usePracticeStore((state)=> state.setMode);
+  const setPracticeQuestions = usePracticeStore((state)=> state.setPracticeQuestions);
+
+  const reviewTarget = records.filter((record)=>(
+    record.evaluation === "review" || record.evaluation === "wrong"
+  ));
+
+  const reviewPractice = reviewTarget.map((record)=>(
+    practiceQuestions.find((question)=>(
+      question.id === record.questionId
+    ))
+  )).filter((q)=>q !== undefined);
 
   return (
     <section className="min-h-[calc(100vh-64px)] bg-[#020b26] px-6 py-12 text-white">
@@ -152,7 +166,20 @@ export default function ResultPage() {
         </div>
 
         <div className="mt-8 space-y-4">
-          <button className="w-full rounded-lg bg-gradient-to-r from-[#4f7df7] to-[#5d5fef] py-4 text-lg font-semibold text-white transition hover:brightness-110">
+          <button 
+            className="w-full rounded-lg bg-gradient-to-r from-[#4f7df7] to-[#5d5fef] py-4 text-lg font-semibold text-white transition hover:brightness-110"
+            onClick = {()=>{
+              if(reviewPractice.length === 0) {
+                alert("복습할 문제가 없습니다 👍");  
+                return
+              };
+
+              resetRecords();
+              setPracticeQuestions(reviewPractice);
+              setMode("review");
+              navigate("/practice")
+            }}
+          >
             복습 시작 ({review.length + wrong.length}문제)
           </button>
 
