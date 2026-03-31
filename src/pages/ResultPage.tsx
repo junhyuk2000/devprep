@@ -1,9 +1,10 @@
-import { questions } from "../data/questions";
 import { useInterviewStore } from "../store/useInterviewStore";
 import { usePracticeStore } from "../store/usePracticeStore"
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function ResultPage() {
+  
   const navigate = useNavigate();
 
 
@@ -57,7 +58,6 @@ export default function ResultPage() {
   .map(([tech]) => tech);
 
   ///////////////////////////////////////////////////////////////////////////
-  const mode = usePracticeStore((state)=> state.mode);
   const setMode = usePracticeStore((state)=> state.setMode);
   const setPracticeQuestions = usePracticeStore((state)=> state.setPracticeQuestions);
 
@@ -158,9 +158,23 @@ export default function ResultPage() {
               })}
             
 
-            <div className="mt-8 flex justify-between border-t border-[#1b2a52] pt-5">
-              <span className="text-lg font-semibold">약점 분석</span>
-              <span className="text-sm text-[#c7d4f7]">{weakTechs.length > 0 ? weakTechs.join(", ") : "없음"}</span>
+           <div className="mt-8 border-t border-[#1b2a52] pt-5">
+              <p className="mb-3 text-lg font-semibold">약점 분석</p>
+
+              {weakTechs.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {weakTechs.map((tech) => (
+                    <span
+                      key={tech}
+                      className="rounded-full bg-slate-700 px-3 py-1 text-xs text-slate-300"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-[#c7d4f7]">없음</p>
+              )}
             </div>
           </div>
         </div>

@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
-type Job = "frontend" | "backend" | "fullstack" | null;
-type QuestionCount = 5 | 10 | 15 | 20 | 25 | 30 | null;
-type Tech = "typescript" | "react" | "javascript" | "browser" | "network" | "htmlcss";
+export type Job = "frontend" | "backend" | "fullstack" | null;
+export type QuestionCount = 5 | 10 | 15 | 20 | 25 | 30 | null;
+export type Tech = "typescript" | "react" | "javascript" | "browser" | "network" | "htmlcss";
 
 interface InterviewState {
     job: Job;
@@ -21,7 +21,10 @@ export const useInterviewStore = create<InterviewState>()((set) => ({
     questionCount : null,
     selectedTech: [],
 
-    setJob: (job) =>set({ job }),
+    setJob: (job) =>set({ 
+        job, 
+        selectedTech: [],
+    }),
     setQuestionCount: (questionCount) =>set({ questionCount }),
 
     toggleTech: (tech) =>

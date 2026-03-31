@@ -45,11 +45,21 @@ export default function PracticePage() {
   },[mode, practiceQuestionsFromStore.length, selectedTech, questionCount, setPracticeQuestions]);
 
 
+  
+
+
   // 현재 index
   const currentIndex = usePracticeStore((state)=> state.currentIndex);
   // currentIndex + 1
   const goNext = usePracticeStore((state)=> state.goNext);
 
+  const progressPercent =
+  practiceQuestionsFromStore.length === 0
+    ? 0
+    : ((currentIndex + 1) / practiceQuestionsFromStore.length) * 100;
+  
+  // textarea
+  const [answerText, setAnswerText] = useState("");
   // 답안 보기
   const [isAnswerVisible, setIsAnswerVisible] = useState(false);
 
@@ -88,6 +98,7 @@ export default function PracticePage() {
 
     setIsAnswerVisible(false);
     setSelectedEvaluation(null);
+    setAnswerText("");
     goNext();
   };
 
@@ -98,13 +109,16 @@ export default function PracticePage() {
       <div className="mx-auto flex w-full max-w-7xl flex-col px-6 py-10">
         {/* 상단 타이틀 */}
         <header className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight">Practice</h1>
+          <h1 className="text-4xl font-bold tracking-tight">{mode === "normal" ? "Practice" : "Practice (Review)"}</h1>
           <p className="mt-4 text-sm text-slate-400">Question {currentIndex + 1} of {practiceQuestionsFromStore.length}</p>
 
           {/* 진행 바 */}
-          {/* <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-white">
-            <div className="h-full w-[36%] rounded-full bg-blue-500" />
-          </div> */}
+          <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-white">
+            <div 
+              className="h-full  rounded-full bg-blue-500" 
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
         </header>
 
         {/* 본문 레이아웃 */}
@@ -117,10 +131,14 @@ export default function PracticePage() {
 
             <div className="mt-8 rounded-2xl bg-slate-800/80 p-6">
               <div className="min-h-[220px] text-base leading-8 text-slate-400 break-keep">
-                <p>답변을 자유롭게 작성해보세요</p>
-                <p className="mt-2">
-                  핵심 개념을 먼저 정리한 뒤 문장으로 풀어 써도 좋습니다
-                </p>
+                <textarea 
+                  value={answerText} 
+                  onChange={(e)=>setAnswerText(e.target.value)}
+                  placeholder="답변을 자유롭게 작성해보세요"
+                  className="w-full min-h-[220px] rounded-xl bg-slate-900/60 p-4 text-base leading-7 text-slate-200 placeholder:text-slate-500 outline-none resize-none focus:ring-2 focus:ring-indigo-500/60 transition "
+                  
+                >
+                </textarea>
               </div>
 
               <button

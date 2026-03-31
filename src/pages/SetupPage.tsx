@@ -1,5 +1,7 @@
 import { useInterviewStore } from "../store/useInterviewStore";
 import { useNavigate } from "react-router-dom"
+import type { Job, Tech } from "../store/useInterviewStore"
+
 
 const JOB_OPTIONS = [
   { label: "FrontEnd", value: "frontend" },
@@ -16,14 +18,24 @@ const QUESTION_OPTIONS = [
   { label: "30", value: 30 },
 ] as const ;
 
-const TECH_OPTIONS = [
-  { label: "TypeScript", value: "typescript" },
-  { label: "React", value: "react" },
-  { label: "JavaScript", value: "javascript" },
-  { label: "Browser", value: "browser" },
-  { label: "Network", value: "network" },
-  { label: "HTML/CSS", value: "htmlcss" },
-] as const ;
+
+type TechOption = {
+  label: string;
+  value: Tech;
+};
+
+const TECH_OPTIONS_BY_JOB: Record<Exclude<Job, null>, TechOption[]> = {
+  frontend: [
+    { label: "TypeScript", value: "typescript" },
+    { label: "React", value: "react" },
+    { label: "JavaScript", value: "javascript" },
+    { label: "Browser", value: "browser" },
+    { label: "Network", value: "network" },
+    { label: "HTML/CSS", value: "htmlcss" }
+  ],
+  backend: [],
+  fullstack:[],
+ };
 
 export default function SetupPage() {
   const job = useInterviewStore((state)=>state.job);
@@ -33,6 +45,8 @@ export default function SetupPage() {
   const setQuestionCount = useInterviewStore((state)=> state.setQuestionCount)
   const toggleTech = useInterviewStore((state)=>state.toggleTech)
   const resetInfo = useInterviewStore((state)=>state.resetInfo)
+
+  const currentTechOptions = job ? TECH_OPTIONS_BY_JOB[job] : [];
 
   const canStart = job !== null && questionCount !== null && selectedTech.length > 0;
 
@@ -129,7 +143,13 @@ export default function SetupPage() {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                {TECH_OPTIONS.map((option) => {
+                {
+                  currentTechOptions.length === 0 ? (
+                    <p className="text-sm text-slate-500">
+                      해당 직무의 기술 스택은 준비중입니다
+                    </p>
+                  ) : (
+                currentTechOptions.map((option) => {
                   const isActive = selectedTech.includes(option.value);
 
                   return (
@@ -146,7 +166,8 @@ export default function SetupPage() {
                   >
                     {option.label}
                   </button>
-                    )})}
+                    )}))
+                  }
                 
               </div>
             </section>
