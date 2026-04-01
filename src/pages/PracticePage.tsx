@@ -15,6 +15,13 @@ export default function PracticePage() {
   const setPracticeQuestions = usePracticeStore((state) => state.setPracticeQuestions); 
   const mode = usePracticeStore((state)=> state.mode);
 
+
+  useEffect(() => {
+  if (practiceQuestionsFromStore.length === 0) {
+    navigate("/setup");
+  }
+  }, [practiceQuestionsFromStore, navigate]);
+
   function shuffleArray<T>(array: T[]): T[] {
     const copied = [...array];
 

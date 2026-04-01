@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type Job = "frontend" | "backend" | "fullstack" | null;
 export type QuestionCount = 5 | 10 | 15 | 20 | 25 | 30 | null;
@@ -16,30 +17,36 @@ interface InterviewState {
     resetInfo: ()=> void
 }
 
-export const useInterviewStore = create<InterviewState>()((set) => ({
-    job : null,
-    questionCount : null,
-    selectedTech: [],
-
-    setJob: (job) =>set({ 
-        job, 
-        selectedTech: [],
-    }),
-    setQuestionCount: (questionCount) =>set({ questionCount }),
-
-    toggleTech: (tech) =>
-        set((state) => ({
-        selectedTech: state.selectedTech.includes(tech)
-            ? state.selectedTech.filter((item) => item !== tech)
-            : [...state.selectedTech, tech],
-        })),
-    
-    resetInfo:()=>
-        set({
-            job: null,
-            questionCount: null,
+export const useInterviewStore = create<InterviewState>()(
+    persist(
+        (set) => ({
+            job : null,
+            questionCount : null,
             selectedTech: [],
-        })
 
-}))
+            setJob: (job) =>set({ 
+                job, 
+                selectedTech: [],
+        }),
+        setQuestionCount: (questionCount) =>set({ questionCount }),
+
+        toggleTech: (tech) =>
+            set((state) => ({
+            selectedTech: state.selectedTech.includes(tech)
+                ? state.selectedTech.filter((item) => item !== tech)
+                : [...state.selectedTech, tech],
+            })),
+        
+        resetInfo:()=>
+            set({
+                job: null,
+                questionCount: null,
+                selectedTech: [],
+            }),
+        }),
+        {
+            name: "interview-storage",
+        }
+    )
+);
 

@@ -6,9 +6,18 @@ import { useEffect } from "react";
 export default function ResultPage() {
   
   const navigate = useNavigate();
-
-
   const records = usePracticeStore((state)=> state.records);
+
+  useEffect(() => {
+    if (records.length === 0) {
+      navigate("/setup", { replace: true });
+    }
+  }, [records, navigate]);
+  
+  if (records.length === 0) {
+    return null;
+  }
+
   const resetInfo = useInterviewStore((state)=> state.resetInfo);
 
   const correct = records.filter((item) => item.evaluation === "correct");

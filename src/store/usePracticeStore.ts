@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { persist } from "zustand/middleware";
 import type { QuestionItem } from "../data/questions"
 
 type Evaluation = "correct" | "review" | "wrong" ;
@@ -27,37 +28,44 @@ interface PracticeState {
     resetPractice:() => void
 }
 
-export const usePracticeStore = create<PracticeState>((set)=>({
-    mode: "normal",
+export const usePracticeStore = create<PracticeState>()(
+    persist(
+        (set)=>({
+            mode: "normal",
 
-    records : [],
-    practiceQuestions: [],
-    currentIndex: 0,
-
-    setMode: (mode) => set({ mode }),
-
-    addRecord: (record) =>
-        set((state)=>({
-            records: [...state.records, record],
-        })),
-
-    resetRecords:() =>
-        set({records: []}),
-
-    goNext: () =>
-        set((state)=>({
-            currentIndex: state.currentIndex + 1
-        })),
-
-    setPracticeQuestions: (questions)=>
-        set({
-            practiceQuestions: questions,
-            currentIndex: 0,
-        }),
-    resetPractice: () =>
-        set({
+            records : [],
             practiceQuestions: [],
             currentIndex: 0,
-            mode: "normal",
-        })
-}));
+
+            setMode: (mode) => set({ mode }),
+
+            addRecord: (record) =>
+                set((state)=>({
+                    records: [...state.records, record],
+                })),
+
+            resetRecords:() =>
+                set({records: []}),
+
+            goNext: () =>
+                set((state)=>({
+                    currentIndex: state.currentIndex + 1
+                })),
+
+            setPracticeQuestions: (questions)=>
+                set({
+                    practiceQuestions: questions,
+                    currentIndex: 0,
+                }),
+            resetPractice: () =>
+                set({
+                    practiceQuestions: [],
+                    currentIndex: 0,
+                    mode: "normal",
+                }),
+            }),
+        {
+            name: "practice-storage",
+        }
+    )    
+);
