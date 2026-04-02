@@ -1,4 +1,5 @@
 import { useInterviewStore } from "../store/useInterviewStore";
+import { usePracticeStore } from "../store/usePracticeStore";
 import { useNavigate } from "react-router-dom"
 import type { Job, Tech } from "../store/useInterviewStore"
 
@@ -50,9 +51,15 @@ export default function SetupPage() {
 
   const canStart = job !== null && questionCount !== null && selectedTech.length > 0;
 
+  const resetPractice = usePracticeStore((state) => state.resetPractice);
+  const resetRecords = usePracticeStore((state) => state.resetRecords);
+
   const navigate = useNavigate();
   const handleStartInterview = ()=> {
     if(!canStart) return;
+
+    resetPractice();
+    resetRecords();
     navigate("/practice")
   };
 

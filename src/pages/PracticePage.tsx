@@ -17,11 +17,20 @@ export default function PracticePage() {
 
 
   useEffect(() => {
-  if (practiceQuestionsFromStore.length === 0) {
-    navigate("/setup");
-  }
-  }, [practiceQuestionsFromStore, navigate]);
+    const isNormalReady = selectedTech.length > 0 && questionCount !== null;
+    const isReviewReady = mode === "review" && practiceQuestionsFromStore.length > 0;
 
+    if (mode === "normal" && !isNormalReady) {
+      navigate("/setup", { replace: true });
+    }
+
+    if (mode === "review" && !isReviewReady) {
+      navigate("/setup", { replace: true });
+    }
+  }, [mode, selectedTech, questionCount, practiceQuestionsFromStore.length, navigate]);
+  
+
+  
   function shuffleArray<T>(array: T[]): T[] {
     const copied = [...array];
 
@@ -50,9 +59,6 @@ export default function PracticePage() {
     setPracticeQuestions(finalQuestions);
     
   },[mode, practiceQuestionsFromStore.length, selectedTech, questionCount, setPracticeQuestions]);
-
-
-  
 
 
   // 현재 index
