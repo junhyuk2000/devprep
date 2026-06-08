@@ -61,7 +61,7 @@ export default function ResultPage() {
 
   const techStatsArray = Object.entries(techStats);
 
-  const weakTechs = techStatsArray.filter(([tech, stat]) => {
+  const weakTechs = techStatsArray.filter(([, stat]) => {
     return stat.wrong > 0 || (stat.correct === 0 && stat.review > 0);
   })
   .map(([tech]) => tech);
