@@ -98,9 +98,8 @@ src/
 │       ├── AppLayout
 │       └── Header
 │
-├── router/
-└── types/
-
+└── router/
+    └── index.tsx
 ```
 
 ---
