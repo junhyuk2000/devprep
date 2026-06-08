@@ -15,19 +15,19 @@ https://devprep-project.netlify.app
 
 ### 메인 화면
 
-![문제 설정](./images/setup.png)
+![문제 설정](./images/setup.jpg)
 
 기술과 문제 수를 선택해 학습 세션을 생성할 수 있습니다.
 
 ### 문제 풀이
 
-![문제 풀이](./images/practice.png)
+![문제 풀이](./images/practice.jpg)
 
 문제를 확인하고 자기 평가(정확 / 복습 필요 / 틀림)를 기록할 수 있습니다.
 
 ### 결과 분석
 
-![결과 분석](./images/result.png)
+![결과 분석](./images/result.jpg)
 
 카테고리별 통계와 약점 기술 분석 결과를 확인할 수 있습니다.
 
